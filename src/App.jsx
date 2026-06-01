@@ -1,53 +1,66 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import confetti from "canvas-confetti";
 import "./App.css";
 
 function MatrixRain() {
-  const columns = Array.from({ length: 42 });
+  const columns = useMemo(() => {
+    return Array.from({ length: 42 }).map((_, index) => ({
+      id: index,
+      left: `${index * 2.5}%`,
+      delay: `${Math.random() * 5}s`,
+      duration: `${6 + Math.random() * 7}s`,
+      chars: Array.from({ length: 30 }).map(
+        () =>
+          ["0", "1", "R", "E", "D", "O", "X", "★", "兄", "友"][
+            Math.floor(Math.random() * 10)
+          ]
+      ),
+    }));
+  }, []);
 
   return (
     <div className="matrix-layer">
-      {columns.map((_, index) => {
-        const chars = Array.from({ length: 26 });
-
-        return (
-          <span
-            key={index}
-            className="matrix-column"
-            style={{
-              left: `${index * 2.5}%`,
-              animationDelay: `${Math.random() * 5}s`,
-              animationDuration: `${6 + Math.random() * 7}s`,
-            }}
-          >
-            {chars.map((_, i) => (
-              <b key={i}>
-                {
-                  ["0", "1", "R", "E", "D", "O", "X", "★", "♡"][
-                    Math.floor(Math.random() * 9)
-                  ]
-                }
-              </b>
-            ))}
-          </span>
-        );
-      })}
+      {columns.map((column) => (
+        <span
+          key={column.id}
+          className="matrix-column"
+          style={{
+            left: column.left,
+            animationDelay: column.delay,
+            animationDuration: column.duration,
+          }}
+        >
+          {column.chars.map((char, i) => (
+            <b key={i}>{char}</b>
+          ))}
+        </span>
+      ))}
     </div>
   );
 }
 
 function ParticleField() {
+  const particles = useMemo(() => {
+    return Array.from({ length: 36 }).map((_, index) => ({
+      id: index,
+      left: `${Math.random() * 100}%`,
+      top: `${Math.random() * 100}%`,
+      delay: `${Math.random() * 6}s`,
+      duration: `${4 + Math.random() * 7}s`,
+    }));
+  }, []);
+
   return (
     <div className="particle-field">
-      {Array.from({ length: 34 }).map((_, index) => (
+      {particles.map((particle) => (
         <span
-          key={index}
+          key={particle.id}
           style={{
-            left: `${Math.random() * 100}%`,
-            top: `${Math.random() * 100}%`,
-            animationDelay: `${Math.random() * 6}s`,
-            animationDuration: `${4 + Math.random() * 7}s`,
+            left: particle.left,
+            top: particle.top,
+            animationDelay: particle.delay,
+            animationDuration: particle.duration,
           }}
         />
       ))}
@@ -84,8 +97,89 @@ function MusicBars({ playing }) {
   );
 }
 
+function BirthdayCake({ cakeCut, onCutCake }) {
+  return (
+    <div className="cake-zone">
+      <motion.div
+        className={`cake-stage ${cakeCut ? "cake-cut" : ""}`}
+        initial={{ opacity: 0, y: 24, scale: 0.94 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ delay: 3.45, duration: 0.7 }}
+      >
+        <div className="cake-glow"></div>
+
+        <div className="candles">
+          <span className="candle">
+            <i></i>
+          </span>
+          <span className="candle">
+            <i></i>
+          </span>
+          <span className="candle">
+            <i></i>
+          </span>
+        </div>
+
+        <div className="cake-body">
+          <div className="cake-half cake-left">
+            <div className="frosting"></div>
+            <div className="cake-layer layer-one"></div>
+            <div className="cake-layer layer-two"></div>
+            <div className="cake-layer layer-three"></div>
+          </div>
+
+          <div className="cake-half cake-right">
+            <div className="frosting"></div>
+            <div className="cake-layer layer-one"></div>
+            <div className="cake-layer layer-two"></div>
+            <div className="cake-layer layer-three"></div>
+          </div>
+
+          <motion.div
+            className="knife"
+            initial={{ x: 130, y: -130, rotate: -38, opacity: 0 }}
+            animate={
+              cakeCut
+                ? { x: 0, y: 16, rotate: -18, opacity: 1 }
+                : { x: 130, y: -130, rotate: -38, opacity: 0.65 }
+            }
+            transition={{ duration: 0.7, type: "spring" }}
+          >
+            <span></span>
+          </motion.div>
+        </div>
+
+        <div className="plate"></div>
+      </motion.div>
+
+      <AnimatePresence>
+        {cakeCut && (
+          <motion.p
+            className="cake-message"
+            initial={{ opacity: 0, y: 16, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            Cake cut complete. Birthday mode unlocked for REDOX.
+          </motion.p>
+        )}
+      </AnimatePresence>
+
+      <motion.button
+        className="cake-button"
+        onClick={onCutCake}
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.94 }}
+      >
+        {cakeCut ? "CUT AGAIN" : "CUT THE CAKE"}
+      </motion.button>
+    </div>
+  );
+}
+
 function App() {
   const [opened, setOpened] = useState(false);
+  const [cakeCut, setCakeCut] = useState(false);
   const [musicPlaying, setMusicPlaying] = useState(false);
   const [musicBlocked, setMusicBlocked] = useState(false);
   const [introDone, setIntroDone] = useState(false);
@@ -102,7 +196,6 @@ function App() {
 
   useEffect(() => {
     const audio = audioRef.current;
-
     if (!audio) return;
 
     audio.volume = 0.45;
@@ -113,7 +206,7 @@ function App() {
         await audio.play();
         setMusicPlaying(true);
         setMusicBlocked(false);
-      } catch (error) {
+      } catch {
         setMusicPlaying(false);
         setMusicBlocked(true);
       }
@@ -125,16 +218,16 @@ function App() {
   useEffect(() => {
     const birthdayLoop = setInterval(() => {
       confetti({
-        particleCount: 35,
-        spread: 90,
-        startVelocity: 30,
+        particleCount: 24,
+        spread: 80,
+        startVelocity: 24,
         origin: {
           x: Math.random(),
-          y: Math.random() * 0.35,
+          y: Math.random() * 0.32,
         },
-        colors: ["#a855f7", "#d946ef", "#f0abfc", "#ffffff", "#c084fc"],
+        colors: ["#4c1d95", "#5b21b6", "#7c3aed", "#c4b5fd", "#ffffff"],
       });
-    }, 4500);
+    }, 5200);
 
     return () => clearInterval(birthdayLoop);
   }, []);
@@ -142,15 +235,15 @@ function App() {
   useEffect(() => {
     if (!opened) return;
 
-    const end = Date.now() + 4200;
+    const end = Date.now() + 3500;
 
     const frame = () => {
       confetti({
-        particleCount: 7,
-        spread: 80,
-        startVelocity: 38,
+        particleCount: 5,
+        spread: 75,
+        startVelocity: 34,
         origin: { x: Math.random(), y: 0.65 },
-        colors: ["#7c3aed", "#a855f7", "#d946ef", "#ffffff", "#f0abfc"],
+        colors: ["#312e81", "#4c1d95", "#7c3aed", "#c4b5fd", "#ffffff"],
       });
 
       if (Date.now() < end) {
@@ -163,14 +256,13 @@ function App() {
 
   const enableMusic = async () => {
     const audio = audioRef.current;
-
     if (!audio) return;
 
     try {
       await audio.play();
       setMusicPlaying(true);
       setMusicBlocked(false);
-    } catch (error) {
+    } catch {
       setMusicPlaying(false);
       setMusicBlocked(true);
     }
@@ -178,7 +270,6 @@ function App() {
 
   const toggleMusic = async () => {
     const audio = audioRef.current;
-
     if (!audio) return;
 
     if (musicPlaying) {
@@ -191,7 +282,7 @@ function App() {
       await audio.play();
       setMusicPlaying(true);
       setMusicBlocked(false);
-    } catch (error) {
+    } catch {
       setMusicBlocked(true);
     }
   };
@@ -201,11 +292,29 @@ function App() {
     await enableMusic();
 
     confetti({
-      particleCount: 260,
-      spread: 140,
-      startVelocity: 45,
+      particleCount: 230,
+      spread: 130,
+      startVelocity: 42,
       origin: { y: 0.55 },
-      colors: ["#7c3aed", "#a855f7", "#d946ef", "#ffffff", "#f0abfc"],
+      colors: ["#312e81", "#4c1d95", "#7c3aed", "#c4b5fd", "#ffffff"],
+    });
+  };
+
+  const cutCake = async () => {
+    setCakeCut(false);
+
+    setTimeout(() => {
+      setCakeCut(true);
+    }, 80);
+
+    await enableMusic();
+
+    confetti({
+      particleCount: 180,
+      spread: 110,
+      startVelocity: 38,
+      origin: { y: 0.62 },
+      colors: ["#7c3aed", "#a78bfa", "#c4b5fd", "#ffffff"],
     });
   };
 
@@ -229,13 +338,15 @@ function App() {
             >
               REDOX
             </motion.div>
+
             <motion.p
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.8 }}
             >
-              Loading birthday celebration...
+              Loading midnight celebration...
             </motion.p>
+
             <div className="intro-loader"></div>
           </motion.div>
         )}
@@ -293,28 +404,13 @@ function App() {
         <div className="corner bottom-left"></div>
         <div className="corner bottom-right"></div>
 
-        <motion.div
-          className="birthday-icon"
-          animate={{
-            y: [0, -14, 0],
-            rotate: [0, 4, -4, 0],
-          }}
-          transition={{
-            duration: 2.4,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        >
-          🎂
-        </motion.div>
-
         <motion.p
           className="eyebrow"
           initial={{ opacity: 0, letterSpacing: "2px" }}
           animate={{ opacity: 1, letterSpacing: "8px" }}
           transition={{ delay: 2.5, duration: 0.9 }}
         >
-          PREMIUM BIRTHDAY SYSTEM ACTIVE
+          MIDNIGHT BIRTHDAY SYSTEM ACTIVE
         </motion.p>
 
         <motion.h1
@@ -357,10 +453,45 @@ function App() {
           animate={{ opacity: 1 }}
           transition={{ delay: 3.3 }}
         >
-          To my biggest friend — may your new year of life be powerful,
-          successful, unforgettable, full of happiness, surprises, and legendary
-          memories.
+          To my brother-level friend REDOX — respect for the loyalty, the
+          laughs, the support, and the real memories. May this year bring you
+          stronger success, bigger wins, peaceful days, and a future full of
+          power.
         </motion.p>
+
+        <BirthdayCake cakeCut={cakeCut} onCutCake={cutCake} />
+
+        <div className="quote-grid">
+          <motion.div
+            className="quote-card"
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 3.5 }}
+          >
+            <span>01</span>
+            <p>Stay sharp, stay focused, and keep moving like a winner.</p>
+          </motion.div>
+
+          <motion.div
+            className="quote-card"
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 3.7 }}
+          >
+            <span>02</span>
+            <p>Real friends are rare. You are one of the solid ones.</p>
+          </motion.div>
+
+          <motion.div
+            className="quote-card"
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 3.9 }}
+          >
+            <span>03</span>
+            <p>New age, new level, new achievements. Keep winning, brother.</p>
+          </motion.div>
+        </div>
 
         <AnimatePresence>
           {opened && (
@@ -371,7 +502,10 @@ function App() {
               exit={{ opacity: 0 }}
             >
               <span>ACCESS GRANTED</span>
-              <p>REDOX, you are not just a friend — you are a legend.</p>
+              <p>
+                REDOX, you are a real one — strong mindset, loyal heart, and
+                legendary energy. Keep winning, brother.
+              </p>
             </motion.div>
           )}
         </AnimatePresence>
@@ -386,10 +520,10 @@ function App() {
         </motion.button>
       </motion.section>
 
-     <footer>
-  <span>Designed with futuristic love for REDOX</span>
-  <strong>FROM ZODIAC</strong>
-</footer>
+      <footer>
+        <span>Built with respect for REDOX</span>
+        <strong>FROM ZODIAC</strong>
+      </footer>
     </main>
   );
 }
