@@ -65,25 +65,6 @@ function MatrixRain() {
     </div>
   );
 }
-  return (
-    <div className="matrix-layer">
-      {columns.map((column) => (
-        <span
-          key={column.id}
-          className="matrix-column"
-          style={{
-            left: column.left,
-            animationDelay: column.delay,
-            animationDuration: column.duration,
-          }}
-        >
-          {column.chars.map((char, i) => (
-            <b key={i}>{char}</b>
-          ))}
-        </span>
-      ))}
-    </div>
-  );
 
 function ParticleField() {
   const particles = useMemo(() => {
@@ -448,15 +429,6 @@ function App() {
         <div className="corner top-right"></div>
         <div className="corner bottom-left"></div>
         <div className="corner bottom-right"></div>
-
-        <motion.p
-          className="eyebrow"
-          initial={{ opacity: 0, letterSpacing: "2px" }}
-          animate={{ opacity: 1, letterSpacing: "8px" }}
-          transition={{ delay: 2.5, duration: 0.9 }}
-        >
-          MIDNIGHT BIRTHDAY SYSTEM ACTIVE
-        </motion.p>
 
         <motion.h1
           className="title"
