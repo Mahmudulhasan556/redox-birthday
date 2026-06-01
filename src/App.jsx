@@ -470,7 +470,7 @@ function App() {
           animate={{ opacity: 1 }}
           transition={{ delay: 3.3 }}
         >
-          To my brother-level friend REDOX — respect for the loyalty, the
+          To my brother level friend REDOX  respect for the loyalty, the
           laughs, the support, and the real memories. May this year bring you
           stronger success, bigger wins, peaceful days, and a future full of
           power.
@@ -520,7 +520,7 @@ function App() {
             >
               <span>ACCESS GRANTED</span>
               <p>
-                REDOX, you are a real one — strong mindset, loyal heart, and
+                REDOX, you are a real one strong mindset, loyal heart, and
                 legendary energy. Keep winning, brother.
               </p>
             </motion.div>
