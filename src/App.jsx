@@ -123,6 +123,59 @@ function MusicBars({ playing }) {
   );
 }
 
+function KnifeCursor() {
+  const [position, setPosition] = useState({ x: -100, y: -100 });
+
+  useEffect(() => {
+    const moveCursor = (event) => {
+      setPosition({
+        x: event.clientX,
+        y: event.clientY,
+      });
+    };
+
+    window.addEventListener("mousemove", moveCursor);
+
+    return () => {
+      window.removeEventListener("mousemove", moveCursor);
+    };
+  }, []);
+
+  return (
+    <>
+      <motion.div
+        className="knife-cursor-glow"
+        animate={{
+          x: position.x - 18,
+          y: position.y - 18,
+        }}
+        transition={{
+          type: "spring",
+          stiffness: 180,
+          damping: 22,
+          mass: 0.4,
+        }}
+      />
+
+      <motion.div
+        className="knife-cursor"
+        animate={{
+          x: position.x - 8,
+          y: position.y - 8,
+        }}
+        transition={{
+          type: "spring",
+          stiffness: 520,
+          damping: 32,
+          mass: 0.25,
+        }}
+      >
+        <span></span>
+      </motion.div>
+    </>
+  );
+}
+
 function BirthdayCake({ cakeCut, onCutCake }) {
   return (
     <div className="cake-zone">
@@ -346,6 +399,8 @@ function App() {
 
   return (
     <main className="birthday-page">
+      <KnifeCursor />
+
       <audio ref={audioRef} src="/happy-birthday.mp3" preload="auto" />
 
       <AnimatePresence>
@@ -470,7 +525,7 @@ function App() {
           animate={{ opacity: 1 }}
           transition={{ delay: 3.3 }}
         >
-          To my brother level friend REDOX  respect for the loyalty, the
+          To my brother-level friend REDOX — respect for the loyalty, the
           laughs, the support, and the real memories. May this year bring you
           stronger success, bigger wins, peaceful days, and a future full of
           power.
@@ -520,7 +575,7 @@ function App() {
             >
               <span>ACCESS GRANTED</span>
               <p>
-                REDOX, you are a real one  strong mindset, loyal heart, and
+                REDOX, you are a real one — strong mindset, loyal heart, and
                 legendary energy. Keep winning, brother.
               </p>
             </motion.div>
