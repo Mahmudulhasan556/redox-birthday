@@ -5,20 +5,66 @@ import "./App.css";
 
 function MatrixRain() {
   const columns = useMemo(() => {
-    return Array.from({ length: 42 }).map((_, index) => ({
+    const symbols = [
+      "0",
+      "1",
+      "R",
+      "E",
+      "D",
+      "O",
+      "X",
+      "Z",
+      "★",
+      "✦",
+      "✧",
+      "◆",
+      "兄",
+      "友",
+    ];
+
+    return Array.from({ length: 70 }).map((_, index) => ({
       id: index,
-      left: `${index * 2.5}%`,
-      delay: `${Math.random() * 5}s`,
-      duration: `${6 + Math.random() * 7}s`,
-      chars: Array.from({ length: 30 }).map(
-        () =>
-          ["0", "1", "R", "E", "D", "O", "X", "★", "兄", "友"][
-            Math.floor(Math.random() * 10)
-          ]
+      left: `${(index / 70) * 100}%`,
+      delay: `${Math.random() * 8}s`,
+      duration: `${7 + Math.random() * 9}s`,
+      size: `${12 + Math.random() * 8}px`,
+      opacity: `${0.28 + Math.random() * 0.45}`,
+      chars: Array.from({ length: 34 }).map(
+        () => symbols[Math.floor(Math.random() * symbols.length)]
       ),
     }));
   }, []);
 
+  return (
+    <div className="matrix-layer">
+      {columns.map((column) => (
+        <span
+          key={column.id}
+          className="matrix-column"
+          style={{
+            left: column.left,
+            animationDelay: column.delay,
+            animationDuration: column.duration,
+            fontSize: column.size,
+            opacity: column.opacity,
+          }}
+        >
+          {column.chars.map((char, i) => (
+            <b
+              key={i}
+              className={i === 0 ? "matrix-head" : ""}
+              style={{
+                animationDelay: `${i * 0.08}s`,
+              }}
+            >
+              {char}
+            </b>
+          ))}
+        </span>
+      ))}
+    </div>
+  );
+}
   return (
     <div className="matrix-layer">
       {columns.map((column) => (
@@ -38,7 +84,6 @@ function MatrixRain() {
       ))}
     </div>
   );
-}
 
 function ParticleField() {
   const particles = useMemo(() => {

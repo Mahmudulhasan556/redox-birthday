@@ -1,111 +1,125 @@
-:root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
-
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
-
-  font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
-  color-scheme: light dark;
-  color: var(--text);
-  background: var(--bg);
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-
-  @media (max-width: 1024px) {
-    font-size: 16px;
-  }
+.matrix-layer {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  z-index: -4;
+  opacity: 0.78;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 50% 20%, rgba(124, 58, 237, 0.13), transparent 28%),
+    linear-gradient(180deg, rgba(1, 0, 8, 0.1), rgba(1, 0, 8, 0.65));
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
-
-  #social .button-icon {
-    filter: invert(1) brightness(2);
-  }
+.matrix-layer::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(196, 181, 253, 0.06) 0px,
+    rgba(196, 181, 253, 0.06) 1px,
+    transparent 1px,
+    transparent 7px
+  );
+  animation: matrixScan 5s linear infinite;
+  opacity: 0.28;
 }
 
-body {
-  margin: 0;
+.matrix-layer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to bottom, rgba(1, 0, 8, 0.95), transparent 18%, transparent 72%, rgba(1, 0, 8, 0.98)),
+    radial-gradient(circle at center, transparent 35%, rgba(1, 0, 8, 0.72) 75%);
 }
 
-#root {
-  width: 1126px;
-  max-width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
-  min-height: 100svh;
+.matrix-column {
+  position: absolute;
+  top: -180%;
   display: flex;
   flex-direction: column;
-  box-sizing: border-box;
+  gap: 7px;
+  color: #a78bfa;
+  font-family: Consolas, "Courier New", monospace;
+  font-weight: 800;
+  line-height: 1;
+  text-shadow:
+    0 0 6px rgba(167, 139, 250, 0.95),
+    0 0 16px rgba(124, 58, 237, 0.9),
+    0 0 34px rgba(76, 29, 149, 0.9);
+  animation-name: matrixFall, matrixSway;
+  animation-timing-function: linear, ease-in-out;
+  animation-iteration-count: infinite, infinite;
+  animation-duration: inherit, 4.5s;
+  will-change: transform;
 }
 
-h1,
-h2 {
-  font-family: var(--heading);
-  font-weight: 500;
-  color: var(--text-h);
+.matrix-column b {
+  display: block;
+  opacity: 0.28;
+  transform: translateZ(0);
+  animation: matrixFlicker 1.4s infinite alternate;
 }
 
-h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-  @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
+.matrix-column b:nth-child(3n) {
+  color: #ddd6fe;
+  opacity: 0.65;
+}
+
+.matrix-column b:nth-child(5n) {
+  color: #7c3aed;
+  opacity: 0.85;
+}
+
+.matrix-head {
+  color: #ffffff !important;
+  opacity: 1 !important;
+  text-shadow:
+    0 0 8px #ffffff,
+    0 0 18px #c4b5fd,
+    0 0 38px #7c3aed;
+}
+
+@keyframes matrixFall {
+  0% {
+    transform: translateY(-20%);
+  }
+
+  100% {
+    transform: translateY(220%);
   }
 }
-h2 {
-  font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
-  margin: 0 0 8px;
-  @media (max-width: 1024px) {
-    font-size: 20px;
+
+@keyframes matrixSway {
+  0%,
+  100% {
+    margin-left: 0;
+  }
+
+  50% {
+    margin-left: 10px;
   }
 }
-p {
-  margin: 0;
+
+@keyframes matrixFlicker {
+  from {
+    opacity: 0.22;
+    filter: blur(0px);
+  }
+
+  to {
+    opacity: 0.9;
+    filter: blur(0.2px);
+  }
 }
 
-code,
-.counter {
-  font-family: var(--mono);
-  display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
-}
+@keyframes matrixScan {
+  from {
+    transform: translateY(-40px);
+  }
 
-code {
-  font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
-  background: var(--code-bg);
+  to {
+    transform: translateY(40px);
+  }
 }
